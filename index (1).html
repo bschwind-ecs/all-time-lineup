@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10151c">
+<title>All-Time Lineup Builder</title>
+<meta name="description" content="Build your all-time starting offense and defense. Search any NFL player and drop him into a formation.">
+<meta property="og:title" content="All-Time Lineup Builder">
+<meta property="og:description" content="Build your all-time starting offense and defense. Search any NFL player and drop him into a formation.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#10151c;--panel:#18202a;--panel2:#202b37;--line:#2a3542;--text:#e8edf2;--muted:#8a98a8;--accent:#f5c542}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+a{color:var(--muted)}
+button,.slot,.card,.chip{touch-action:manipulation}
+.app{display:grid;grid-template-columns:340px minmax(0,1fr);height:100vh}
+.side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.sh{padding:14px 14px 10px;border-bottom:1px solid var(--line)}
+.shtop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.sh h1{font-size:16px;margin:0;letter-spacing:.02em}
+.sheetClose{display:none}
+input[type=text],select{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:9px 10px;border-radius:8px;font:inherit}
+input[type=text]:focus,select:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:3px 9px;border-radius:99px;font-size:12px;cursor:pointer}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.selinfo{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--panel2);border:1px solid var(--accent);border-radius:8px;padding:6px 8px;font-size:13px}
+.selinfo[hidden]{display:none}
+.selinfo span{flex:1;min-width:0}
+.results{flex:1;overflow:auto;padding:8px;min-height:120px;-webkit-overflow-scrolling:touch}
+.empty{color:var(--muted);padding:14px 8px;font-size:13px}
+.note{color:var(--muted);padding:6px 8px;font-size:12px}
+.card{display:flex;gap:10px;align-items:center;padding:8px;border-radius:10px;cursor:pointer;border:1px solid transparent}
+.card:hover{background:var(--panel2);border-color:var(--line)}
+.thumb{width:44px;height:44px;border-radius:50%;background:#33475b center top/cover no-repeat;flex:none;display:grid;place-items:center;font-weight:700;color:#cfd9e3;font-size:13px}
+.card .n{font-weight:650}
+.card .d{color:var(--muted);font-size:12px}
+.custom{border-top:1px solid var(--line);padding:10px 14px}
+.custom summary{cursor:pointer;color:var(--muted)}
+.custom .row{display:grid;gap:8px;margin-top:10px}
+.credit{border-top:1px solid var(--line);padding:8px 14px;font-size:11px}
+.credit a{color:var(--muted)}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:12px;max-width:560px;width:calc(100% - 32px);max-height:88vh;overflow:auto;padding:20px 22px;line-height:1.55;font-size:13px}
+dialog::backdrop{background:rgba(0,0,0,.65)}
+dialog h2{margin:0 0 10px;font-size:16px}
+dialog h3{margin:14px 0 4px;font-size:13px}
+dialog p,dialog ul{margin:0 0 6px;color:#c9d3dd}
+dialog ul{padding-left:18px}
+dialog a{color:var(--accent)}
+.btn{background:var(--panel2);border:1px solid var(--line);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer;font:inherit}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:#1a1400;border-color:var(--accent);font-weight:700}
+.btn.active{background:var(--text);color:#10151c;border-color:var(--text);font-weight:700}
+.btn.mini{padding:4px 9px;font-size:12px}
+main{display:flex;flex-direction:column;min-width:0;overflow:auto}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.bar select{width:auto;min-width:170px}
+.opts{display:contents}
+.opts .grow{flex:1;min-width:150px;width:auto}
+.tabs{display:flex;gap:6px}
+#moreBtn{display:none}
+.wrap{padding:16px;display:flex;justify-content:center}
+.hint{color:var(--muted);font-size:12px;text-align:center;margin:0 16px 16px}
+.field{--S:8.2cqw;container-type:inline-size;position:relative;aspect-ratio:1.15/1;width:min(100%,1000px,calc((100vh - 140px)*1.15));border-radius:12px;overflow:hidden;background:repeating-linear-gradient(to bottom,#2f8a3d 0 12.5%,#2a7d37 12.5% 25%);box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.field::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.28) 0 .3cqw,transparent .3cqw 12.5%);pointer-events:none}
+.ftitle{position:absolute;top:1.6cqw;left:0;right:0;text-align:center;font-size:2.8cqw;font-weight:800;color:#fff;letter-spacing:.05em;text-transform:uppercase;text-shadow:0 2px 6px rgba(0,0,0,.6);pointer-events:none}
+.los{position:absolute;left:0;right:0;border-top:.35cqw dashed rgba(90,165,255,.9);pointer-events:none}
+.slot{position:absolute;width:0;height:0;-webkit-user-select:none;user-select:none}
+.photo{position:absolute;left:calc(var(--S)/-2);top:calc(var(--S)/-2);width:var(--S);height:var(--S);border-radius:50%;border:.45cqw dashed rgba(255,255,255,.55);background:rgba(0,0,0,.18) center top/cover no-repeat;display:grid;place-items:center;color:rgba(255,255,255,.8);font-weight:800;font-size:2.6cqw;cursor:pointer}
+.slot.filled .photo{border:.45cqw solid #fff;background-color:#33475b;box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.slot.sel .photo{border-color:var(--accent);box-shadow:0 0 0 .7cqw rgba(245,197,66,.45)}
+.slot.over .photo{border-color:var(--accent);transform:scale(1.08)}
+.pos{position:absolute;left:calc(var(--S)/-2 - .6cqw);top:calc(var(--S)/-2 - .6cqw);background:#0b1118;color:#fff;font-size:1.3cqw;font-weight:800;padding:.15cqw .75cqw;border-radius:99px;pointer-events:none;letter-spacing:.03em}
+.nm{position:absolute;top:calc(var(--S)/2 + .4cqw);left:-6.5cqw;width:13cqw;text-align:center;font-size:1.65cqw;font-weight:700;color:#fff;line-height:1.15;text-shadow:0 1px 3px #000,0 0 2px #000;pointer-events:none}
+.x{position:absolute;left:calc(var(--S)/2 - 1.2cqw);top:calc(var(--S)/-2 - .4cqw);width:2.4cqw;height:2.4cqw;border-radius:50%;border:none;background:#c0392b;color:#fff;font-size:1.8cqw;line-height:1;cursor:pointer;display:none;padding:0}
+.slot.filled:hover .x{display:block}
+.cutout .slot.filled:not(.noimg) .photo{width:calc(var(--S)*1.35);height:calc(var(--S)*1.35);left:calc(var(--S)*-.675);top:calc(var(--S)*-.675);border:none;border-radius:0;background-color:transparent;background-size:contain;background-position:center;box-shadow:none}
+.cutout .slot.filled:not(.noimg) .nm{top:calc(var(--S)*.68)}
+.cutout .slot.filled:not(.noimg) .pos{left:calc(var(--S)*-.675);top:calc(var(--S)*-.675)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0b1118;border:1px solid var(--line);padding:9px 14px;border-radius:8px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1}
+.fab{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:20;padding:13px 22px;border-radius:99px;font-size:15px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+#backdrop{display:none}
+#shotPanel{display:none;position:fixed;right:12px;bottom:12px;gap:6px;opacity:.55;z-index:8}
+#shotPanel:hover{opacity:1}
+.shot .side,.shot .bar,.shot .hint,.shot .fab{display:none!important}
+.shot .app{grid-template-columns:1fr;height:auto;min-height:100vh}
+.shot .wrap{padding:12px}
+.shot #shotPanel{display:flex}
+.shot .x{display:none!important}
+.wrap.both{gap:12px;align-items:flex-start}
+.wrap.both .field{width:calc(50% - 6px)}
+@media(max-width:860px){
+  .app{display:block;height:auto}
+  main{overflow:visible}
+  .side{position:fixed;left:0;right:0;bottom:0;top:9vh;z-index:40;border-right:none;border-top:1px solid var(--line);border-radius:16px 16px 0 0;transform:translateY(105%);transition:transform .25s ease;box-shadow:0 -12px 40px rgba(0,0,0,.55);padding-bottom:env(safe-area-inset-bottom)}
+  .side.open{transform:none}
+  #backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:35}
+  body.sheetOpen #backdrop{display:block}
+  body.sheetOpen{overflow:hidden}
+  body.sheetOpen .fab{display:none}
+  .sheetClose{display:inline-block}
+  .fab{display:block}
+  input[type=text],select{font-size:16px}
+  .bar{padding:8px 10px;gap:6px}
+  .tabs{flex:1 1 auto}
+  .tabs .btn{flex:1}
+  .bar select{min-width:0;flex:1 1 150px}
+  .opts{display:none;flex:1 1 100%;flex-wrap:wrap;gap:6px}
+  .bar.more .opts{display:flex}
+  .opts .grow{flex:1 1 100%}
+  .opts select{flex:1 1 140px}
+  #moreBtn{display:inline-block}
+  .wrap{padding:8px}
+  .field{--S:9.6cqw;width:100%;aspect-ratio:.78/1;border-radius:10px}
+  .ftitle{font-size:4.8cqw;top:2.4cqw}
+  .photo{font-size:4.4cqw;border-width:.8cqw}
+  .slot.sel .photo{box-shadow:0 0 0 1.2cqw rgba(245,197,66,.45)}
+  .pos{font-size:2.2cqw;left:calc(var(--S)/-2 - 1cqw);top:calc(var(--S)/-2 - 1cqw)}
+  .nm{font-size:2.5cqw;width:11.6cqw;left:-5.8cqw;top:calc(var(--S)/2 + .8cqw)}
+  .x{width:5cqw;height:5cqw;font-size:3.8cqw;left:calc(var(--S)/2 - 2.6cqw);top:calc(var(--S)/-2 - 1.4cqw)}
+  .slot.filled .x{display:block}
+  .los{border-top-width:.7cqw}
+  .hint{margin-bottom:92px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="sh">
+      <div class="shtop">
+        <h1>All-Time Lineup Builder</h1>
+        <button class="btn primary sheetClose" id="sheetClose">Done</button>
+      </div>
+      <input type="text" id="q" placeholder="Search any NFL player, past or present" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <div id="selInfo" class="selinfo" hidden></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="results" id="results"><div class="empty">Type a name. Press Enter or tap a result to add him to the highlighted slot, or to the first open slot that matches his position.</div></div>
+    <details class="custom">
+      <summary>Add a player manually (own photo or cutout)</summary>
+      <div class="row">
+        <input type="text" id="cname" placeholder="Player name">
+        <input type="text" id="curl" placeholder="Image URL (optional, transparent PNG works for cutouts)">
+        <input type="file" id="cfile" accept="image/*">
+        <button class="btn" id="cadd">Add to lineup</button>
+      </div>
+    </details>
+    <div class="credit"><a href="#" id="aboutLink">About, credits and licenses</a></div>
+  </aside>
+  <main>
+    <div class="bar" id="bar">
+      <div class="tabs">
+        <button class="btn" id="tabOff">Offense</button>
+        <button class="btn" id="tabDef">Defense</button>
+      </div>
+      <select id="formation"></select>
+      <div class="opts">
+        <input type="text" id="title" class="grow" placeholder="Lineup title">
+        <select id="style" title="Photo style">
+          <option value="circle">Photos: circle</option>
+          <option value="cutout">Photos: cutout (no crop)</option>
+        </select>
+        <button class="btn" id="clear">Clear unit</button>
+      </div>
+      <button class="btn primary" id="shot">Screenshot view</button>
+      <button class="btn" id="moreBtn">More</button>
+    </div>
+    <div class="wrap" id="wrap"><div id="field" class="field"></div><div id="field2" class="field" hidden></div></div>
+    <p class="hint">Tap or click a slot to pick who goes there, drag players between slots to swap, and hit the red x to remove. Use Screenshot view for a clean image to share. Your lineup autosaves in this browser only.</p>
+  </main>
+</div>
+<div id="backdrop"></div>
+<button class="btn primary fab" id="fab">+ Add player</button>
+<div id="shotPanel">
+  <button class="btn" id="sOff">Offense</button>
+  <button class="btn" id="sDef">Defense</button>
+  <button class="btn" id="sBack">Back</button>
+</div>
+<dialog id="about">
+  <h2>About this site</h2>
+  <p>A fan-made tool for building all-time lineups. It is not affiliated with, endorsed by or sponsored by the NFL, any team or any player. Player names are used only to identify the players you pick.</p>
+  <h3>Your data</h3>
+  <p>There are no accounts, ads or tracking here. Your lineup is saved only in your own browser and is never sent to a server.</p>
+  <h3>Player names and stats</h3>
+  <p>Names, positions and seasons (1974 to present) come from <a href="https://github.com/nflverse/nflverse-data" target="_blank" rel="noopener">nflverse</a>, licensed under CC BY 4.0.</p>
+  <h3>Photos and descriptions</h3>
+  <p>Photos and short descriptions are loaded live from <a href="https://www.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>, <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> and <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Each photo belongs to its photographer and has its own license, such as CC BY-SA, CC BY or public domain. To see the author and license of a photo, open the player's Wikipedia article below and click the image.</p>
+  <ul id="photoCredits"></ul>
+  <h3>Photos you add yourself</h3>
+  <p>Images you upload or link stay in your browser and are your responsibility.</p>
+  <h3>Removal requests</h3>
+  <p>To ask for anything to be removed or corrected, open an issue at <a href="https://github.com/bschwind-ecs/all-time-lineup/issues" target="_blank" rel="noopener">github.com/bschwind-ecs/all-time-lineup</a>.</p>
+  <p style="margin-top:14px"><button class="btn" id="aboutClose">Close</button></p>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script src="players.js"></script>
+<script>
+/* ---------- data ---------- */
+const OFF_LOS = 37, DEF_LOS = 61;
+const OL = [['LT','LT',20,40],['LG','LG',35,40],['C','C',50,40],['RG','RG',65,40],['RT','RT',80,40]];
+const F = {
+  off: {
+    'Shotgun (1 RB, 1 TE, 3 WR)': [...OL,['QB','QB',50,58],['RB','RB',64,60],['TE','TE',93,40],['WR1','WR',7,40],['WR2','WR',20,52],['WR3','WR',80,52]],
+    'I-Formation (FB, RB, TE, 2 WR)': [...OL,['QB','QB',50,52],['FB','FB',50,64],['RB','RB',50,76],['TE','TE',93,40],['WR1','WR',7,40],['WR2','WR',92,52]],
+    'Spread (1 RB, 4 WR)': [...OL,['QB','QB',50,58],['RB','RB',64,60],['WR1','WR',7,40],['WR2','WR',93,40],['WR3','WR',20,52],['WR4','WR',80,52]],
+    'Singleback (2 TE, 2 WR)': [...OL,['QB','QB',50,52],['RB','RB',50,66],['TE','TE',93,40],['TE2','TE',7,40],['WR1','WR',22,52],['WR2','WR',80,52]]
+  },
+  def: {
+    '4-3': [['DE1','DE',26,58],['DT1','DT',42,58],['DT2','DT',58,58],['DE2','DE',74,58],['LB1','OLB',28,44],['LB2','MLB',50,44],['LB3','OLB',72,44],['CB1','CB',8,56],['CB2','CB',92,56],['FS','FS',36,26],['SS','SS',64,26]],
+    '3-4': [['DE1','DE',30,58],['DT1','NT',50,58],['DE2','DE',70,58],['LB1','OLB',14,45],['LB2','ILB',40,44],['LB3','ILB',60,44],['LB4','OLB',86,45],['CB1','CB',8,58],['CB2','CB',92,58],['FS','FS',36,26],['SS','SS',64,26]],
+    'Nickel (4-2-5)': [['DE1','DE',26,58],['DT1','DT',42,58],['DT2','DT',58,58],['DE2','DE',74,58],['LB1','LB',38,44],['LB2','LB',62,44],['CB1','CB',8,56],['CB2','CB',92,56],['CB3','NCB',20,44],['FS','FS',36,26],['SS','SS',64,26]],
+    'Dime (4-1-6)': [['DE1','DE',26,58],['DT1','DT',42,58],['DT2','DT',58,58],['DE2','DE',74,58],['LB1','LB',50,44],['CB1','CB',8,56],['CB2','CB',92,56],['CB3','NCB',24,44],['CB4','NCB',76,44],['FS','FS',38,26],['SS','SS',62,26]]
+  }
+};
+/*END-DATA*/
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+const initials = n => (n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+const cssUrl = u => 'url("' + String(u).replace(/"/g, '%22').replace(/\\/g, '%5C') + '")';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const mq = window.matchMedia('(max-width:860px)');
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400); }
+
+/* ---------- state ---------- */
+const KEY = 'lineups-v1';
+function defState(){
+  return { style:'circle',
+    off:{ formation:Object.keys(F.off)[0], slots:{}, title:'My All-Time Offense' },
+    def:{ formation:Object.keys(F.def)[0], slots:{}, title:'My All-Time Defense' } };
+}
+let state = null;
+try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+if (!state || !state.off || !state.def) state = defState();
+['off','def'].forEach(u => { if (!F[u][state[u].formation]) state[u].formation = Object.keys(F[u])[0]; });
+let unit = 'off', selected = null;
+const slotsOf = u => F[u][state[u].formation];
+const curSlots = () => slotsOf(unit);
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) { toast('Could not autosave (storage full). Use smaller uploaded photos.'); } }
+
+/*SEARCH-START*/
+/* ---------- name search ---------- */
+const POS_WORD = { QB:'quarterback', RB:'running back', FB:'fullback', WR:'wide receiver', TE:'tight end', OT:'offensive tackle', G:'offensive guard', C:'center', OL:'offensive lineman', DE:'defensive end', DT:'defensive tackle', NT:'defensive tackle', DL:'defensive lineman', LB:'linebacker', OLB:'linebacker', ILB:'linebacker', MLB:'linebacker', CB:'cornerback', DB:'defensive back', S:'safety', FS:'safety', SS:'safety', K:'placekicker', P:'punter', LS:'long snapper' };
+const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim();
+const squash = n => { const out = []; let run = ''; for (const t of n.split(' ')) { if (t.length === 1) run += t; else { if (run) { out.push(run); run = ''; } out.push(t); } } if (run) out.push(run); return out; };
+const qtokens = q => squash(norm(q)).filter(Boolean);
+const wordsOf = n => { const w = squash(n); const ex = w.slice(0, -1).map((x, i) => x + w[i + 1]); if (w.length > 2) ex.push(w.join('')); return w.concat(ex); };
+let DB = null;
+function loadDB(){
+  if (DB) return DB;
+  const src = (typeof window !== 'undefined' && window.NFL_PLAYERS) || '';
+  DB = src ? src.split('\n').map(l => { const [name, pos, a, b] = l.split('|'); const n = norm(name); return { name, pos, a: +a, b: +b, n, w: wordsOf(n) }; }) : [];
+  return DB;
+}
+function lev(a, b, max){
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]; let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      const v = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      cur[j] = v; if (v < rowMin) rowMin = v;
+    }
+    if (rowMin > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+// lower score is better; null means no match
+function scoreName(qt, words, fuzzy){
+  let score = 0;
+  for (const t of qt) {
+    let best = 99;
+    for (const w of words) {
+      if (w === t) { best = 0; break; }
+      if (w.startsWith(t)) best = Math.min(best, 1);
+      else if (fuzzy && t.length >= 4) {
+        const mx = t.length >= 7 ? 2 : 1;
+        const d = lev(t, w, mx);
+        if (d <= mx) best = Math.min(best, 1.5 + d);
+      }
+    }
+    if (best === 99) return null;
+    score += best;
+  }
+  return score;
+}
+function localSearch(q){
+  const qt = qtokens(q);
+  if (!qt.length) return [];
+  let out = [];
+  const passes = [{ t: qt, fuzzy: false }];
+  if (qt.length > 1) passes.push({ t: [qt.join('')], fuzzy: false });
+  passes.push({ t: qt, fuzzy: true });
+  for (const pass of passes) {
+    for (const p of loadDB()) {
+      const s = scoreName(pass.t, p.w, pass.fuzzy);
+      if (s == null) continue;
+      const yrs = p.b >= 2026 ? p.a + '-present' : (p.a === p.b ? String(p.a) : p.a + '-' + p.b);
+      out.push({ name: p.name, img: null, pos: p.pos, desc: 'American football ' + (POS_WORD[p.pos] || ''), meta: (p.pos ? p.pos + ' · ' : '') + yrs, score: s, len: p.b - p.a });
+    }
+    if (out.length) break;
+  }
+  out.sort((x, y) => x.score - y.score || y.len - x.len);
+  return out.slice(0, 30);
+}
+/*SEARCH-END*/
+
+/* ---------- position guessing from description ---------- */
+function guessLabels(desc){
+  const d = (desc || '').toLowerCase();
+  if (/quarterback/.test(d)) return ['QB'];
+  if (/fullback/.test(d)) return ['FB','RB'];
+  if (/running back|halfback|tailback/.test(d)) return ['RB'];
+  if (/wide receiver|flanker|split end/.test(d)) return ['WR'];
+  if (/tight end/.test(d)) return ['TE'];
+  if (/offensive tackle/.test(d)) return ['LT','RT'];
+  if (/offensive guard/.test(d)) return ['LG','RG'];
+  if (/football/.test(d) && /\bcenter\b/.test(d)) return ['C'];
+  if (/offensive line/.test(d)) return ['LT','LG','C','RG','RT'];
+  if (/defensive end|edge rusher/.test(d)) return ['DE'];
+  if (/defensive tackle|nose (tackle|guard)/.test(d)) return ['DT','NT'];
+  if (/defensive line/.test(d)) return ['DE','DT','NT'];
+  if (/linebacker/.test(d)) return ['MLB','ILB','OLB','LB'];
+  if (/cornerback/.test(d)) return ['CB','NCB'];
+  if (/defensive back/.test(d)) return ['CB','NCB','FS','SS'];
+  if (/safety/.test(d)) return ['FS','SS'];
+  return [];
+}
+
+/* ---------- search sheet (phone) ---------- */
+function openSheet(){ $('#side').classList.add('open'); document.body.classList.add('sheetOpen'); try { $('#q').focus({ preventScroll: true }); } catch(e) {} }
+function closeSheet(){
+  $('#side').classList.remove('open'); document.body.classList.remove('sheetOpen');
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (selected) { selected = null; renderField(); }
+}
+$('#fab').onclick = () => { selected = null; renderField(); openSheet(); };
+$('#sheetClose').onclick = closeSheet;
+$('#backdrop').onclick = closeSheet;
+
+/* ---------- placing players ---------- */
+function place(p){
+  const st = state[unit], slots = curSlots();
+  let k = selected;
+  if (!k) {
+    const want = guessLabels(p.desc);
+    const hit = slots.find(s => !st.slots[s[0]] && want.includes(s[1])) || slots.find(s => !st.slots[s[0]]);
+    if (!hit) { toast('No open slots. Tap a slot to replace that player.'); return false; }
+    k = hit[0];
+  }
+  st.slots[k] = { name:p.name, img:p.img || null, desc:p.desc || '', wiki:p.wiki || null };
+  selected = null; save(); renderField();
+  if (mq.matches) closeSheet();
+  return true;
+}
+function updateSelInfo(){
+  const b = $('#selInfo');
+  if (!selected) { b.hidden = true; return; }
+  const slot = curSlots().find(s => s[0] === selected);
+  if (!slot) { b.hidden = true; return; }
+  const p = state[unit].slots[selected];
+  b.hidden = false; b.innerHTML = '';
+  b.append(el('span', null, (p ? 'Replacing ' + p.name + ' at ' : 'Adding to ') + slot[1]));
+  if (p) {
+    const r = el('button', 'btn mini', 'Remove');
+    r.onclick = () => { delete state[unit].slots[selected]; selected = null; save(); renderField(); if (mq.matches) closeSheet(); };
+    b.append(r);
+  }
+  const c = el('button', 'btn mini', 'Cancel');
+  c.onclick = () => { selected = null; renderField(); if (mq.matches) closeSheet(); };
+  b.append(c);
+}
+
+/* ---------- field rendering ---------- */
+function renderControls(){
+  const sel = $('#formation'); sel.innerHTML = '';
+  Object.keys(F[unit]).forEach(n => { const o = el('option', null, n); o.value = n; sel.append(o); });
+  sel.value = state[unit].formation;
+  $('#title').value = state[unit].title;
+  $('#style').value = state.style;
+  $('#tabOff').classList.toggle('active', unit === 'off');
+  $('#tabDef').classList.toggle('active', unit === 'def');
+  $('#sOff').classList.toggle('active', unit === 'off');
+  $('#sDef').classList.toggle('active', unit === 'def');
+}
+// stretch each formation vertically so the lineup fills the field
+function fitY(u, slots){
+  const ys = slots.map(s => s[3]);
+  const mn = Math.min(...ys), mx = Math.max(...ys), lo = 24, hi = 82;
+  const span = Math.min(hi - lo, (mx - mn) * 2.4);
+  const start = lo + ((hi - lo) - span) / 2;
+  const f = y => start + (y - mn) * span / Math.max(1, mx - mn);
+  const los = Math.min(95, Math.max(10, f(u === 'off' ? OFF_LOS : DEF_LOS)));
+  return { f, los };
+}
+function buildField(f, u){
+  f.innerHTML = '';
+  f.classList.toggle('cutout', state.style === 'cutout');
+  const st = state[u], slots = slotsOf(u), fit = fitY(u, slots);
+  f.append(el('div', 'ftitle', st.title));
+  const los = el('div', 'los'); los.style.top = fit.los + '%'; f.append(los);
+  slots.forEach(([k, l, x, y]) => {
+    const p = st.slots[k];
+    const isSel = selected === k && u === unit;
+    const s = el('div', 'slot' + (p ? ' filled' : '') + (p && !p.img ? ' noimg' : '') + (isSel ? ' sel' : ''));
+    s.style.left = (mq.matches ? 8 + x * 0.84 : x) + '%'; s.style.top = fit.f(y) + '%';
+    const ph = el('div', 'photo');
+    if (p) { if (p.img) ph.style.backgroundImage = cssUrl(p.img); else ph.textContent = initials(p.name); }
+    else ph.textContent = '+';
+    s.append(ph, el('div', 'pos', l));
+    if (p) {
+      s.append(el('div', 'nm', p.name));
+      const xb = el('button', 'x', '×'); xb.title = 'Remove';
+      xb.addEventListener('click', e => { e.stopPropagation(); delete st.slots[k]; save(); renderField(); });
+      s.append(xb);
+      s.draggable = true;
+      s.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', JSON.stringify({ t:'slot', u, k, p })); e.dataTransfer.effectAllowed = 'copyMove'; });
+    }
+    s.addEventListener('click', () => {
+      if (document.body.classList.contains('shot')) return;
+      if (mq.matches) { selected = k; renderField(); openSheet(); return; }
+      selected = selected === k ? null : k; renderField();
+      if (selected) { try { $('#q').focus(); } catch(e) {} }
+    });
+    s.addEventListener('dragover', e => { e.preventDefault(); s.classList.add('over'); });
+    s.addEventListener('dragleave', () => s.classList.remove('over'));
+    s.addEventListener('drop', e => {
+      e.preventDefault(); s.classList.remove('over');
+      let d; try { d = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(_) { return; }
+      if (d.t === 'player') st.slots[k] = d.p;
+      else if (d.t === 'slot') {
+        if (d.u === u) { const a = st.slots[d.k], b = st.slots[k]; st.slots[k] = a; if (b) st.slots[d.k] = b; else delete st.slots[d.k]; }
+        else st.slots[k] = d.p;
+      }
+      selected = null; save(); renderField();
+    });
+    f.append(s);
+  });
+}
+function renderField(){
+  const both = document.body.classList.contains('shot') && window.innerWidth >= 900;
+  $('#wrap').classList.toggle('both', both);
+  const f2 = $('#field2'); f2.hidden = !both;
+  if (both) { buildField($('#field'), 'off'); buildField(f2, 'def'); }
+  else { buildField($('#field'), unit); f2.innerHTML = ''; }
+  updateSelInfo();
+}
+function renderAll(){ renderControls(); renderField(); }
+
+/* ---------- controls ---------- */
+function setUnit(u){ unit = u; selected = null; renderAll(); }
+$('#tabOff').onclick = () => setUnit('off');
+$('#tabDef').onclick = () => setUnit('def');
+$('#sOff').onclick = () => setUnit('off');
+$('#sDef').onclick = () => setUnit('def');
+$('#formation').onchange = e => { state[unit].formation = e.target.value; selected = null; save(); renderField(); };
+$('#title').oninput = e => { state[unit].title = e.target.value; save(); const t = document.querySelector('.ftitle'); if (t) t.textContent = e.target.value; };
+$('#style').onchange = e => { state.style = e.target.value; save(); renderField(); };
+$('#clear').onclick = () => { if (confirm('Clear every player from this ' + (unit === 'off' ? 'offense' : 'defense') + '?')) { state[unit].slots = {}; selected = null; save(); renderField(); } };
+$('#moreBtn').onclick = () => { const b = $('#bar'); b.classList.toggle('more'); $('#moreBtn').textContent = b.classList.contains('more') ? 'Less' : 'More'; };
+function shotMode(on){
+  document.body.classList.toggle('shot', on); selected = null;
+  if (on) closeSheet();
+  renderAll();
+  if (on) toast(window.innerWidth >= 900 ? 'Both lineups shown. Take your screenshot, then press Esc or Back.' : 'Take your screenshot, then tap Back.');
+}
+$('#shot').onclick = () => shotMode(true);
+$('#sBack').onclick = () => shotMode(false);
+let rt;
+window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (document.body.classList.contains('shot')) renderField(); }, 150); });
+document.addEventListener('keydown', e => {
+  const typing = /INPUT|SELECT|TEXTAREA/.test((document.activeElement || {}).tagName || '');
+  if (e.key === 'Escape') {
+    if ($('#about').open) return;
+    if (document.body.classList.contains('shot')) { shotMode(false); return; }
+    if (document.body.classList.contains('sheetOpen')) { closeSheet(); return; }
+    if (selected) { selected = null; renderField(); }
+    return;
+  }
+  if (e.key === '/' && !typing) { e.preventDefault(); $('#q').focus(); return; }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selected && !typing) {
+    delete state[unit].slots[selected]; selected = null; save(); renderField();
+  }
+});
+
+/* ---------- live lookup: Wikipedia (photos, older players) and Wikidata (names only) ---------- */
+const FB_RE = /football|quarterback|running back|linebacker|cornerback|receiver|tight end|lineman|safety|kicker|punter/i;
+const cleanTitle = t => t.replace(/\s*\(.*?\)\s*$/, '');
+async function fetchWiki(q){
+  const errs = [];
+  try {
+    const url = 'https://en.wikipedia.org/w/api.php?' + new URLSearchParams({
+      action:'query', format:'json', origin:'*', generator:'search', gsrsearch:q + ' american football',
+      gsrlimit:'15', gsrnamespace:'0', prop:'pageimages|description', piprop:'thumbnail', pithumbsize:'320', pilimit:'15'
+    });
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    let pages = Object.values((j.query && j.query.pages) || {}).sort((a, b) => a.index - b.index);
+    pages = pages.filter(p => FB_RE.test(p.description || ''));
+    return pages.map(pg => ({ name: cleanTitle(pg.title), img: pg.thumbnail ? pg.thumbnail.source : null, desc: pg.description || '', wiki: pg.title }));
+  } catch (e) { errs.push('wikipedia: ' + e.message); }
+  try {
+    const r = await fetch('https://en.wikipedia.org/w/rest.php/v1/search/page?' + new URLSearchParams({ q: q + ' american football', limit: '15' }));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    return (j.pages || []).map(p => ({
+      name: cleanTitle(p.title),
+      img: p.thumbnail && p.thumbnail.url ? 'https:' + p.thumbnail.url.replace(/^https?:/, '').replace(/\/\d+px-/, '/320px-') : null,
+      desc: p.description || '',
+      wiki: p.title
+    })).filter(p => FB_RE.test(p.desc));
+  } catch (e) { errs.push('wikipedia rest: ' + e.message); }
+  throw new Error(errs.join(' | '));
+}
+async function fetchWikidata(q){
+  const r = await fetch('https://www.wikidata.org/w/api.php?' + new URLSearchParams({
+    action:'wbsearchentities', search:q, language:'en', uselang:'en', type:'item', limit:'15', format:'json', origin:'*'
+  }));
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const j = await r.json();
+  return (j.search || []).filter(it => /american football|nfl/i.test(it.description || '')).map(it => ({ name: it.label, img: null, desc: it.description || '' }));
+}
+async function fetchLive(q){
+  const [w, d] = await Promise.allSettled([fetchWiki(q), fetchWikidata(q)]);
+  if (w.status === 'rejected' && d.status === 'rejected') throw new Error(w.reason.message);
+  return [].concat(w.status === 'fulfilled' ? w.value : [], d.status === 'fulfilled' ? d.value : []);
+}
+
+/* ---------- combine local names with live results ---------- */
+function mergeResults(local, live, q){
+  const qt = qtokens(q);
+  const byName = new Map();
+  local.forEach(p => { const k = norm(p.name); if (!byName.has(k)) byName.set(k, []); byName.get(k).push(p); });
+  const extras = [], seenExtra = new Set();
+  live.forEach(lp => {
+    const k = norm(lp.name);
+    const cands = byName.get(k);
+    if (cands) {
+      // attach a photo to the matching local player, only when it is clearly the same person
+      if (lp.img) {
+        const d = (lp.desc || '').toLowerCase();
+        const pick = cands.length === 1 ? cands[0] : cands.find(c => POS_WORD[c.pos] && d.includes(POS_WORD[c.pos]));
+        if (pick && !pick.img) { pick.img = lp.img; pick.wiki = lp.wiki; }
+      }
+      return;
+    }
+    if (seenExtra.has(k)) return;
+    seenExtra.add(k);
+    const s = scoreName(qt, wordsOf(norm(lp.name)), true);
+    extras.push({ name: lp.name, img: lp.img, wiki: lp.wiki, pos: '', desc: lp.desc, meta: lp.desc, score: s == null ? 50 : s, len: 0 });
+  });
+  return local.concat(extras).sort((x, y) => x.score - y.score || (y.img ? 1 : 0) - (x.img ? 1 : 0) || y.len - x.len).slice(0, 40);
+}
+
+/* ---------- search UI ---------- */
+const SUGGEST = ['Jerry Rice','Walter Payton','Lawrence Taylor','Tom Brady','Deion Sanders','Reggie White','Ray Lewis','Randy Moss','Barry Sanders','Ed Reed'];
+const chips = $('#chips');
+SUGGEST.forEach(n => { const c = el('span', 'chip', n); c.onclick = () => { $('#q').value = n; runSearch(n); }; chips.append(c); });
+let timer, seq = 0, lastResults = [];
+$('#q').addEventListener('input', e => { clearTimeout(timer); const v = e.target.value.trim(); timer = setTimeout(() => runSearch(v), 250); });
+$('#q').addEventListener('keydown', async e => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault(); clearTimeout(timer);
+  const v = $('#q').value.trim();
+  if (v.length < 2) return;
+  await Promise.race([runSearch(v), sleep(1400)]);
+  const p = lastResults[0];
+  if (!p) { toast('No match for "' + v + '"'); return; }
+  if (place({ name: p.name, img: p.img, desc: p.desc, wiki: p.wiki })) { $('#q').value = ''; resetResults(); }
+});
+function resetResults(){ lastResults = []; const box = $('#results'); box.innerHTML = ''; box.append(el('div', 'empty', 'Type a name. Press Enter or tap a result to add him to the highlighted slot, or to the first open slot that matches his position.')); }
+function renderResults(list, note){
+  lastResults = list;
+  const box = $('#results'); box.innerHTML = '';
+  if (!list.length) box.append(el('div', 'empty', 'No matches yet. Check the spelling, or add the player manually below.'));
+  list.forEach(p => {
+    const c = el('div', 'card'); c.draggable = true;
+    const th = el('div', 'thumb'); if (p.img) th.style.backgroundImage = cssUrl(p.img); else th.textContent = initials(p.name);
+    const info = el('div'); info.append(el('div', 'n', p.name), el('div', 'd', p.meta || p.desc || ''));
+    c.append(th, info);
+    c.onclick = () => place({ name: p.name, img: p.img, desc: p.desc, wiki: p.wiki });
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', JSON.stringify({ t:'player', p: { name: p.name, img: p.img, desc: p.desc, wiki: p.wiki } })); e.dataTransfer.effectAllowed = 'copy'; });
+    box.append(c);
+  });
+  if (note) box.append(el('div', 'note', note));
+}
+async function runSearch(q){
+  const box = $('#results');
+  if (q.length < 2) { box.innerHTML = ''; box.append(el('div', 'empty', 'Type at least 2 letters.')); lastResults = []; return; }
+  const my = ++seq;
+  const local = localSearch(q);
+  const haveDB = loadDB().length > 0;
+  renderResults(local, 'Looking up photos and older players...');
+  let live = [], failed = false;
+  try { live = await fetchLive(q); } catch (e) { failed = true; }
+  if (my !== seq) return;
+  const merged = mergeResults(local, live, q);
+  let note = '';
+  if (failed) note = 'Could not reach Wikipedia, so photos and players from before 1974 are not shown. Names below come from the built-in list.';
+  if (!haveDB) note = 'The built-in name list (players.js) did not load, so only Wikipedia results are available.';
+  renderResults(merged, note);
+}
+
+/* ---------- manual player ---------- */
+let customImg = null;
+function fileToDataURL(file){
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const im = new Image();
+      im.onload = () => {
+        const s = Math.min(1, 480 / Math.max(im.width, im.height));
+        const c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+        res(c.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', .88));
+      };
+      im.onerror = rej; im.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+$('#cfile').onchange = async e => { const f = e.target.files[0]; customImg = null; if (f) { try { customImg = await fileToDataURL(f); } catch(_) { toast('Could not read that image'); } } };
+$('#cadd').onclick = () => {
+  const name = $('#cname').value.trim();
+  if (!name) { toast('Enter a name first'); return; }
+  if (place({ name, img: customImg || $('#curl').value.trim() || null, desc:'' })) { $('#cname').value = ''; $('#curl').value = ''; $('#cfile').value = ''; customImg = null; }
+};
+
+/* ---------- about / credits panel ---------- */
+function openAbout(e){
+  if (e) e.preventDefault();
+  const ul = $('#photoCredits'); ul.innerHTML = '';
+  const seen = new Set();
+  ['off', 'def'].forEach(u => Object.values(state[u].slots).forEach(p => {
+    if (!p || !p.img || !p.wiki || seen.has(p.wiki)) return;
+    seen.add(p.wiki);
+    const li = el('li'); const a = el('a', null, p.name + ' (Wikipedia)');
+    a.href = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(p.wiki.replace(/ /g, '_')); a.target = '_blank'; a.rel = 'noopener';
+    li.append(a); ul.append(li);
+  }));
+  if (!seen.size) ul.append(el('li', null, 'No Wikipedia photos are on your field right now.'));
+  const d = $('#about'); if (d.showModal) d.showModal(); else d.setAttribute('open', '');
+}
+$('#aboutLink').onclick = openAbout;
+$('#aboutClose').onclick = () => $('#about').close();
+$('#about').addEventListener('click', e => { if (e.target === $('#about')) $('#about').close(); });
+
+renderAll();
+if (!mq.matches && window.matchMedia('(hover:hover)').matches) { try { $('#q').focus(); } catch(e) {} }
+</script>
+</body>
+</html>
