@@ -140,7 +140,7 @@ input[type=text]:focus,select:focus{outline:2px solid #111}
 .field::before{background:repeating-linear-gradient(to bottom,#e3e3e0 0 .25cqw,transparent .25cqw 12.5%)}
 .ftitle{color:#111;text-shadow:none;font-weight:900;letter-spacing:.12em}
 .los{border-top:.3cqw dashed #111}
-.photo{border:.4cqw dashed #b5b5b1;background:#fafafa;color:#a0a09c}
+.photo{border:.4cqw dashed #b5b5b1;background-color:#fafafa;color:#a0a09c}
 .slot.filled .photo{border:.45cqw solid #111;background-color:#2b2b2b;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2)}
 .slot.sel .photo{border-color:#111;box-shadow:0 0 0 .8cqw rgba(0,0,0,.18)}
 .slot.over .photo{border-color:#111}
@@ -173,7 +173,7 @@ body,button,input,select{font-family:"Barlow",system-ui,-apple-system,"Segoe UI"
    repeating-linear-gradient(to bottom,rgba(255,255,255,.7) 0 .25cqw,transparent .25cqw 2.5%) calc(100% - 1.2cqw) 0/1.8cqw 100% no-repeat}
 .ftitle{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45)}
 .los{border-top:.35cqw dashed #fff;opacity:.95}
-.photo{border:.4cqw dashed rgba(255,255,255,.6);background:rgba(0,0,0,.14);color:rgba(255,255,255,.8)}
+.photo{border:.4cqw dashed rgba(255,255,255,.6);background-color:rgba(0,0,0,.14);background-size:cover;background-position:center top;background-repeat:no-repeat;color:rgba(255,255,255,.8)}
 .slot.filled .photo{border:.5cqw solid #fff;background-color:#1c1c1c;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.4)}
 .slot.sel .photo{border-color:#fff;box-shadow:0 0 0 .8cqw rgba(255,255,255,.4)}
 .slot.over .photo{border-color:#fff;transform:scale(1.08)}
@@ -203,7 +203,7 @@ body,button,input,select{font-family:"Barlow",system-ui,-apple-system,"Segoe UI"
         <button class="btn" id="cadd">Add to lineup</button>
       </div>
     </details>
-    <div class="credit"><a href="#" id="aboutLink">About, credits and licenses</a></div>
+    <div class="credit"><a href="#" id="aboutLink">About, credits and licenses</a> <span style="opacity:.6">&middot; v3</span></div>
   </aside>
   <main>
     <div class="bar" id="bar">
@@ -481,7 +481,7 @@ function buildField(f, u){
     const s = el('div', 'slot' + (p ? ' filled' : '') + (p && !p.img ? ' noimg' : '') + (isSel ? ' sel' : ''));
     s.style.left = (mq.matches ? 8 + x * 0.84 : x) + '%'; s.style.top = fit.f(y) + '%';
     const ph = el('div', 'photo');
-    if (p) { if (p.img) ph.style.backgroundImage = cssUrl(p.img); else ph.textContent = initials(p.name); }
+    if (p) { if (p.img) { ph.style.backgroundImage = cssUrl(p.img); ph.style.backgroundSize = state.style === 'cutout' ? 'contain' : 'cover'; ph.style.backgroundPosition = state.style === 'cutout' ? 'center' : 'center top'; ph.style.backgroundRepeat = 'no-repeat'; } else ph.textContent = initials(p.name); }
     else ph.textContent = '+';
     s.append(ph, el('div', 'pos', l));
     if (p) {
@@ -575,7 +575,7 @@ async function fetchWiki(q){
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const j = await r.json();
     let pages = Object.values((j.query && j.query.pages) || {}).sort((a, b) => a.index - b.index);
-    pages = pages.filter(p => FB_RE.test(p.description || ''));
+    pages = pages.filter(p => FB_RE.test(p.description || '') && !(/award|trophy|season|league|conference|bowl|draft/i.test(p.description || '') && !/player|quarterback|back|receiver|end\b|tackle|guard|center|linebacker|safety|kicker|punter/i.test(p.description || '')));
     return pages.map(pg => ({ name: cleanTitle(pg.title), img: pg.thumbnail ? pg.thumbnail.source : null, desc: pg.description || '', wiki: pg.title }));
   } catch (e) { errs.push('wikipedia: ' + e.message); }
   try {
