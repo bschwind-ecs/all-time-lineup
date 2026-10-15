@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#10151c">
+<meta name="theme-color" content="#ffffff">
 <title>All-Time Lineup Builder</title>
 <meta name="description" content="Build your all-time starting offense and defense. Search any NFL player and drop him into a formation.">
 <meta property="og:title" content="All-Time Lineup Builder">
 <meta property="og:description" content="Build your all-time starting offense and defense. Search any NFL player and drop him into a formation.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8F%88%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#10151c;--panel:#18202a;--panel2:#202b37;--line:#2a3542;--text:#e8edf2;--muted:#8a98a8;--accent:#f5c542}
 *{box-sizing:border-box}
@@ -107,7 +108,7 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
   input[type=text],select{font-size:16px}
   .bar{padding:8px 10px;gap:6px}
   .tabs{flex:1 1 auto}
-  .tabs .btn{flex:1}
+  .tabs .btn{flex:1;padding:8px 4px;font-size:14px;white-space:nowrap}
   .bar select{min-width:0;flex:1 1 150px}
   .opts{display:none;flex:1 1 100%;flex-wrap:wrap;gap:6px}
   .bar.more .opts{display:flex}
@@ -126,6 +127,58 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
   .los{border-top-width:.7cqw}
   .hint{margin-bottom:92px}
 }
+
+/* ---- black and white theme ---- */
+:root{--bg:#f4f4f2;--panel:#fff;--panel2:#f0f0ee;--line:#dcdcd8;--text:#111;--muted:#6b6b68;--accent:#111}
+body{letter-spacing:-.005em}
+.btn.primary{background:#111;color:#fff;border-color:#111}
+.btn.active{background:#111;color:#fff;border-color:#111}
+.selinfo{border-color:#111}
+input[type=text]:focus,select:focus{outline:2px solid #111}
+.thumb{background-color:#e4e4e1;color:#444}
+.field{background:#fff;border:1px solid #111;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.field::before{background:repeating-linear-gradient(to bottom,#e3e3e0 0 .25cqw,transparent .25cqw 12.5%)}
+.ftitle{color:#111;text-shadow:none;font-weight:900;letter-spacing:.12em}
+.los{border-top:.3cqw dashed #111}
+.photo{border:.4cqw dashed #b5b5b1;background-color:#fafafa;color:#a0a09c}
+.slot.filled .photo{border:.45cqw solid #111;background-color:#2b2b2b;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.slot.sel .photo{border-color:#111;box-shadow:0 0 0 .8cqw rgba(0,0,0,.18)}
+.slot.over .photo{border-color:#111}
+.pos{background:#111;color:#fff}
+.nm{color:#111;text-shadow:none;font-weight:800}
+.x{background:#111;color:#fff}
+.toast{background:#111;color:#fff;border-color:#111}
+dialog{background:#fff;color:#111}
+dialog p,dialog ul{color:#333}
+dialog a{color:#111;text-decoration:underline}
+.shot body,body.shot{background:#fff}
+@media(max-width:860px){.side{box-shadow:0 -12px 40px rgba(0,0,0,.25)}#backdrop{background:rgba(0,0,0,.4)}}
+
+/* ---- fonts: Barlow (UI) + Barlow Condensed (field) ---- */
+body,button,input,select{font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.sh h1,.ftitle,.nm,.pos,.chip,.btn.primary{font-family:"Barlow Condensed","Arial Narrow","Helvetica Neue",Arial,sans-serif}
+.sh h1{font-size:20px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.ftitle{font-weight:800;font-size:3.4cqw;letter-spacing:.1em}
+.nm{font-weight:700;font-size:2cqw;letter-spacing:.01em}
+.pos{font-weight:700;font-size:1.5cqw;letter-spacing:.06em}
+.btn.primary{font-size:15px;letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+@media(max-width:860px){.ftitle{font-size:6cqw}.nm{font-size:2.9cqw}.pos{font-size:2.7cqw}.fab{font-size:17px}}
+
+/* ---- green field, white markings ---- */
+.field{background:repeating-linear-gradient(to bottom,#2f7d43 0 12.5%,#2a713c 12.5% 25%);border:none;box-shadow:inset 0 0 0 .7cqw #fff,0 10px 30px rgba(0,0,0,.18)}
+.field::before{background:repeating-linear-gradient(to bottom,rgba(255,255,255,.55) 0 .3cqw,transparent .3cqw 12.5%)}
+.field::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+   repeating-linear-gradient(to bottom,rgba(255,255,255,.7) 0 .25cqw,transparent .25cqw 2.5%) 1.2cqw 0/1.8cqw 100% no-repeat,
+   repeating-linear-gradient(to bottom,rgba(255,255,255,.7) 0 .25cqw,transparent .25cqw 2.5%) calc(100% - 1.2cqw) 0/1.8cqw 100% no-repeat}
+.ftitle{color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.los{border-top:.35cqw dashed #fff;opacity:.95}
+.photo{border:.4cqw dashed rgba(255,255,255,.6);background-color:rgba(0,0,0,.14);background-size:cover;background-position:center top;background-repeat:no-repeat;color:rgba(255,255,255,.8)}
+.slot.filled .photo{border:.5cqw solid #fff;background-color:#1c1c1c;color:#fff;box-shadow:0 3px 10px rgba(0,0,0,.4)}
+.slot.sel .photo{border-color:#fff;box-shadow:0 0 0 .8cqw rgba(255,255,255,.4)}
+.slot.over .photo{border-color:#fff;transform:scale(1.08)}
+.pos{background:#111;color:#fff}
+.nm{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8),0 0 2px rgba(0,0,0,.8)}
 </style>
 </head>
 <body>
@@ -157,6 +210,7 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
       <div class="tabs">
         <button class="btn" id="tabOff">Offense</button>
         <button class="btn" id="tabDef">Defense</button>
+        <button class="btn" id="tabSt">Special Teams</button>
       </div>
       <select id="formation"></select>
       <div class="opts">
@@ -171,7 +225,7 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
       <button class="btn" id="moreBtn">More</button>
     </div>
     <div class="wrap" id="wrap"><div id="field" class="field"></div><div id="field2" class="field" hidden></div></div>
-    <p class="hint">Tap or click a slot to pick who goes there, drag players between slots to swap, and hit the red x to remove. Use Screenshot view for a clean image to share. Your lineup autosaves in this browser only.</p>
+    <p class="hint">Tap or click a slot to pick who goes there, drag players between slots to swap, and hit the x to remove. Use Screenshot view for a clean image to share. Your lineup autosaves in this browser only.</p>
   </main>
 </div>
 <div id="backdrop"></div>
@@ -179,6 +233,7 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
 <div id="shotPanel">
   <button class="btn" id="sOff">Offense</button>
   <button class="btn" id="sDef">Defense</button>
+  <button class="btn" id="sSt">Special Teams</button>
   <button class="btn" id="sBack">Back</button>
 </div>
 <dialog id="about">
@@ -187,6 +242,7 @@ main{display:flex;flex-direction:column;min-width:0;overflow:auto}
   <h3>Your data</h3>
   <p>There are no accounts, ads or tracking here. Your lineup is saved only in your own browser and is never sent to a server.</p>
   <h3>Player names and stats</h3>
+  <p>Fonts: Barlow and Barlow Condensed by Jeremy Tribby, SIL Open Font License, served by Google Fonts.</p>
   <p>Names, positions and seasons (1974 to present) come from <a href="https://github.com/nflverse/nflverse-data" target="_blank" rel="noopener">nflverse</a>, licensed under CC BY 4.0.</p>
   <h3>Photos and descriptions</h3>
   <p>Photos and short descriptions are loaded live from <a href="https://www.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>, <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> and <a href="https://www.wikidata.org" target="_blank" rel="noopener">Wikidata</a>. Each photo belongs to its photographer and has its own license, such as CC BY-SA, CC BY or public domain. To see the author and license of a photo, open the player's Wikipedia article below and click the image.</p>
@@ -216,6 +272,10 @@ const F = {
     '3-4': [['DE1','DE',30,58],['DT1','NT',50,58],['DE2','DE',70,58],['LB1','OLB',14,45],['LB2','ILB',40,44],['LB3','ILB',60,44],['LB4','OLB',86,45],['CB1','CB',8,58],['CB2','CB',92,58],['FS','FS',36,26],['SS','SS',64,26]],
     'Nickel (4-2-5)': [['DE1','DE',26,58],['DT1','DT',42,58],['DT2','DT',58,58],['DE2','DE',74,58],['LB1','LB',38,44],['LB2','LB',62,44],['CB1','CB',8,56],['CB2','CB',92,56],['CB3','NCB',20,44],['FS','FS',36,26],['SS','SS',64,26]],
     'Dime (4-1-6)': [['DE1','DE',26,58],['DT1','DT',42,58],['DT2','DT',58,58],['DE2','DE',74,58],['LB1','LB',50,44],['CB1','CB',8,56],['CB2','CB',92,56],['CB3','NCB',24,44],['CB4','NCB',76,44],['FS','FS',38,26],['SS','SS',62,26]]
+  },
+  st: {
+    'Core (K, P, LS, KR, PR)': [['K','K',28,34],['P','P',72,34],['LS','LS',50,49],['KR','KR',28,64],['PR','PR',72,64]],
+    'Full (adds holder, 2 gunners)': [['K','K',22,32],['H','H',50,32],['P','P',78,32],['G1','G',10,48],['LS','LS',50,48],['G2','G',90,48],['KR','KR',28,64],['PR','PR',72,64]]
   }
 };
 /*END-DATA*/
@@ -234,12 +294,14 @@ const KEY = 'lineups-v1';
 function defState(){
   return { style:'circle',
     off:{ formation:Object.keys(F.off)[0], slots:{}, title:'My All-Time Offense' },
-    def:{ formation:Object.keys(F.def)[0], slots:{}, title:'My All-Time Defense' } };
+    def:{ formation:Object.keys(F.def)[0], slots:{}, title:'My All-Time Defense' },
+    st:{ formation:Object.keys(F.st)[0], slots:{}, title:'My All-Time Special Teams' } };
 }
 let state = null;
 try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
 if (!state || !state.off || !state.def) state = defState();
-['off','def'].forEach(u => { if (!F[u][state[u].formation]) state[u].formation = Object.keys(F[u])[0]; });
+if (!state.st) state.st = defState().st;
+['off','def','st'].forEach(u => { if (!F[u][state[u].formation]) state[u].formation = Object.keys(F[u])[0]; });
 let unit = 'off', selected = null;
 const slotsOf = u => F[u][state[u].formation];
 const curSlots = () => slotsOf(unit);
@@ -316,6 +378,10 @@ function localSearch(q){
 /* ---------- position guessing from description ---------- */
 function guessLabels(desc){
   const d = (desc || '').toLowerCase();
+  if (/long snapper/.test(d)) return ['LS'];
+  if (/punter/.test(d)) return ['P'];
+  if (/kicker/.test(d)) return ['K'];
+  if (/return (specialist|man)|returner/.test(d)) return ['KR','PR'];
   if (/quarterback/.test(d)) return ['QB'];
   if (/fullback/.test(d)) return ['FB','RB'];
   if (/running back|halfback|tailback/.test(d)) return ['RB'];
@@ -388,8 +454,10 @@ function renderControls(){
   $('#style').value = state.style;
   $('#tabOff').classList.toggle('active', unit === 'off');
   $('#tabDef').classList.toggle('active', unit === 'def');
+  $('#tabSt').classList.toggle('active', unit === 'st');
   $('#sOff').classList.toggle('active', unit === 'off');
   $('#sDef').classList.toggle('active', unit === 'def');
+  $('#sSt').classList.toggle('active', unit === 'st');
 }
 // stretch each formation vertically so the lineup fills the field
 function fitY(u, slots){
@@ -398,7 +466,7 @@ function fitY(u, slots){
   const span = Math.min(hi - lo, (mx - mn) * 2.4);
   const start = lo + ((hi - lo) - span) / 2;
   const f = y => start + (y - mn) * span / Math.max(1, mx - mn);
-  const los = Math.min(95, Math.max(10, f(u === 'off' ? OFF_LOS : DEF_LOS)));
+  const los = u === 'st' ? null : Math.min(95, Math.max(10, f(u === 'off' ? OFF_LOS : DEF_LOS)));
   return { f, los };
 }
 function buildField(f, u){
@@ -406,7 +474,7 @@ function buildField(f, u){
   f.classList.toggle('cutout', state.style === 'cutout');
   const st = state[u], slots = slotsOf(u), fit = fitY(u, slots);
   f.append(el('div', 'ftitle', st.title));
-  const los = el('div', 'los'); los.style.top = fit.los + '%'; f.append(los);
+  if (fit.los != null) { const los = el('div', 'los'); los.style.top = fit.los + '%'; f.append(los); }
   slots.forEach(([k, l, x, y]) => {
     const p = st.slots[k];
     const isSel = selected === k && u === unit;
@@ -446,7 +514,7 @@ function buildField(f, u){
   });
 }
 function renderField(){
-  const both = document.body.classList.contains('shot') && window.innerWidth >= 900;
+  const both = document.body.classList.contains('shot') && window.innerWidth >= 900 && unit !== 'st';
   $('#wrap').classList.toggle('both', both);
   const f2 = $('#field2'); f2.hidden = !both;
   if (both) { buildField($('#field'), 'off'); buildField(f2, 'def'); }
@@ -459,12 +527,14 @@ function renderAll(){ renderControls(); renderField(); }
 function setUnit(u){ unit = u; selected = null; renderAll(); }
 $('#tabOff').onclick = () => setUnit('off');
 $('#tabDef').onclick = () => setUnit('def');
+$('#tabSt').onclick = () => setUnit('st');
 $('#sOff').onclick = () => setUnit('off');
 $('#sDef').onclick = () => setUnit('def');
+$('#sSt').onclick = () => setUnit('st');
 $('#formation').onchange = e => { state[unit].formation = e.target.value; selected = null; save(); renderField(); };
 $('#title').oninput = e => { state[unit].title = e.target.value; save(); const t = document.querySelector('.ftitle'); if (t) t.textContent = e.target.value; };
 $('#style').onchange = e => { state.style = e.target.value; save(); renderField(); };
-$('#clear').onclick = () => { if (confirm('Clear every player from this ' + (unit === 'off' ? 'offense' : 'defense') + '?')) { state[unit].slots = {}; selected = null; save(); renderField(); } };
+$('#clear').onclick = () => { if (confirm('Clear every player from this ' + (unit === 'off' ? 'offense' : unit === 'def' ? 'defense' : 'special teams') + '?')) { state[unit].slots = {}; selected = null; save(); renderField(); } };
 $('#moreBtn').onclick = () => { const b = $('#bar'); b.classList.toggle('more'); $('#moreBtn').textContent = b.classList.contains('more') ? 'Less' : 'More'; };
 function shotMode(on){
   document.body.classList.toggle('shot', on); selected = null;
